@@ -1,0 +1,57 @@
+server:
+  port: 8251
+
+spring:
+  application:
+    name: dpvn-storage-service
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: false
+  datasource:
+    hikari:
+      connection-timeout: 60000 #milisecond
+      maximum-pool-size: 20
+      minimum-idle: 2
+      idle-timeout: 300000 # Close idle connections after 30s
+      max-lifetime: 600000  # Close long-living connections after 10 min
+      leak-detection-threshold: 60000 #milisecond
+  servlet:
+    multipart:
+      max-file-size: 50MB
+      max-request-size: 50MB
+
+---
+spring:
+  config:
+    activate:
+      on-profile: default, command, local
+  datasource:
+    url: jdbc:mysql://localhost:3306/storage
+    username: root
+    password: aR@and0m
+  data:
+    redis:
+      host: localhost
+      port: 6379
+
+storage:
+  base-path: /Users/trungtn/projects/dpvn/dpvn-share/dpvn-storage-service/src/main/resources/protected
+  url-prefix: http://localhost:8250/api/file  # used to construct returned links
+
+
+---
+spring:
+  config:
+    activate:
+      on-profile: production
+  datasource:
+    url: jdbc:mysql://dpvn-mysql:3306/storage
+    username: root
+    password: aR@and0m
+  data:
+    redis:
+      host: dpvn-redis
+storage:
+  base-path: /apps/storage-data/protected # thư mục bên trong container, phải map ra ngoài
+  url-prefix: https://storage.duocphamvietnhat.com/api/file  # used to construct returned links

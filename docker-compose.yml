@@ -1,0 +1,11 @@
+version: "3.8"
+
+services:
+  dpvn-nginx-storage:
+    image: nginx:latest
+    container_name: dpvn-nginx-storage
+    ports:
+      - "8250:8250"
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+      - /Users/trungtn/projects/dpvn/dpvn-share/dpvn-storage-service/src/main/resources/protected:/mnt/storage-data:ro  # cho Nginx đọc file

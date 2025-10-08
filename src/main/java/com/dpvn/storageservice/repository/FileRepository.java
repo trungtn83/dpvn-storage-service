@@ -1,0 +1,13 @@
+package com.dpvn.storageservice.repository;
+
+import com.dpvn.storageservice.domain.File;
+import java.util.Optional;
+import org.springframework.data.jpa.repository.JpaRepository;
+
+public interface FileRepository extends JpaRepository<File, Long> {
+  Optional<File> findBySlug(String slug);
+
+  Optional<File> findFirstBySource(String source);
+
+  Optional<File> findFirstByHash(String hash);
+}

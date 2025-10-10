@@ -9,6 +9,7 @@ import com.dpvn.storageservice.service.FileService;
 import java.nio.charset.StandardCharsets;
 import java.text.Normalizer;
 import java.util.List;
+import org.hibernate.Hibernate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpHeaders;
@@ -93,7 +94,11 @@ public class FileController {
 
     List<FileDto> fileDtos =
         fileService.uploadFromUrls(sources).stream()
-            .map(file -> BeanMapper.instance().map(file, FileDto.class))
+            .map(
+                file -> {
+                  File plainFile = Hibernate.unproxy(file, File.class);
+                  return BeanMapper.instance().map(plainFile, FileDto.class);
+                })
             .toList();
 
     long took = System.currentTimeMillis() - start;

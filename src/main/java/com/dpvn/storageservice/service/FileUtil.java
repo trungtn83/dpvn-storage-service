@@ -4,6 +4,8 @@ import com.dpvn.storageservice.domain.HttpDownloadResult;
 import java.io.*;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.util.UUID;
 import org.apache.tika.Tika;
 
@@ -81,9 +83,19 @@ public class FileUtil {
    * Download file HTTP (đơn giản)
    */
   public static HttpDownloadResult download(String urlStr) throws IOException {
-    URL url = new URL(urlStr);
+    // Nếu URL có ký tự Unicode thì encode phần path
+    int lastSlash = urlStr.lastIndexOf('/');
+    String base = urlStr.substring(0, lastSlash + 1);
+    String file = urlStr.substring(lastSlash + 1);
+    String encodedFile = URLEncoder.encode(file, StandardCharsets.UTF_8).replace("+", "%20");
+    URL url = new URL(base + encodedFile);
+
     HttpURLConnection conn = (HttpURLConnection) url.openConnection();
-    conn.setRequestProperty("User-Agent", "StorageService/1.0");
+    conn.setInstanceFollowRedirects(true);
+    conn.setRequestProperty(
+        "User-Agent",
+        "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/141.0.0.0 Safari/537.36");
+    conn.setRequestProperty("Accept", "application/pdf,image/jpeg,image/png,*/*;q=0.8");
     conn.setConnectTimeout(10000);
     conn.setReadTimeout(10000);
 

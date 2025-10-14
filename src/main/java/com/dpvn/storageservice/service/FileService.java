@@ -83,25 +83,9 @@ public class FileService extends AbstractService {
 
   /** Upload nhiều URL song song */
   public List<File> uploadFromUrls(List<FastMap> sources) {
-    List<Callable<File>> tasks =
-        sources.stream().map(source -> (Callable<File>) () -> uploadFromUrl(source)).toList();
-
-    List<File> results = new ArrayList<>();
-    try {
-      List<Future<File>> futures = taskExecutor.getThreadPoolExecutor().invokeAll(tasks);
-      for (Future<File> f : futures) {
-        try {
-          results.add(f.get());
-        } catch (ExecutionException ee) {
-          throw new RuntimeException(
-              "One of downloads failed: " + ee.getCause().getMessage(), ee.getCause());
-        }
-      }
-    } catch (InterruptedException ie) {
-      Thread.currentThread().interrupt();
-      throw new RuntimeException("Interrupted while downloading", ie);
-    }
-    return results;
+    List<File> files = new ArrayList<>();
+    sources.forEach(source -> files.add(uploadFromUrl(source)));
+    return files;
   }
 
   /** Get file metadata theo slug */

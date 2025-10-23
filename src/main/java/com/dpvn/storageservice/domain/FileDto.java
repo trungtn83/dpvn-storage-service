@@ -1,6 +1,5 @@
 package com.dpvn.storageservice.domain;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import java.time.Instant;
 import java.util.ArrayList;
@@ -8,18 +7,18 @@ import java.util.List;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class FileDto {
-  @JsonIgnore private Long id;
+  private Long id;
   private String slug; // uuid + ext
-  @JsonIgnore private String filePath; // 20250915/abc.png
+  private String filePath; // 20250915/abc.png
   private String fileName; // filename gốc upload lên
-  @JsonIgnore private String fileMimeType; // image/png, video/mp4...
-  @JsonIgnore private Long fileSize;
-  @JsonIgnore private String source; // gốc từ cdn thuốc sỉ, hay upload lên, hay lấy từ đâu?
-  @JsonIgnore private Instant createdAt;
-  @JsonIgnore private Instant updateAt;
-  @JsonIgnore private Long accessCount = 0L;
-  @JsonIgnore private Instant lastAccessAt;
-  @JsonIgnore private List<FileMetadataDto> metadata = new ArrayList<>();
+  private String fileMimeType; // image/png, video/mp4...
+  private Long fileSize;
+  private String source; // gốc từ cdn thuốc sỉ, hay upload lên, hay lấy từ đâu?
+  private Instant createdAt;
+  private Instant updateAt;
+  private Long accessCount = 0L;
+  private Instant lastAccessAt;
+  private List<FileMetadataDto> metadata = new ArrayList<>();
 
   public Long getId() {
     return id;

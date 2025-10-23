@@ -22,6 +22,7 @@ public class Province {
 
   private Long idf;
   private String code; // mã hành chính
+  private String type; // thủ đô, thành phố hay tỉnh
   private String name; // tỉnh Lào Cai
 
   @Column(columnDefinition = "TEXT")
@@ -178,5 +179,13 @@ public class Province {
 
   public void setNote(String note) {
     this.note = note;
+  }
+
+  public String getType() {
+    return type;
+  }
+
+  public void setType(String type) {
+    this.type = type;
   }
 }

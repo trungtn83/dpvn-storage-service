@@ -167,10 +167,11 @@ public class FileService extends AbstractService {
     if (dbFileOpt.isPresent()) {
       return dbFileOpt.get();
     }
-    dbFileOpt = fileRepository.findFirstByHash(md5);
-    if (dbFileOpt.isPresent()) {
-      return dbFileOpt.get();
-    }
+    // md5 ko work
+    //    dbFileOpt = fileRepository.findFirstByHash(md5);
+    //    if (dbFileOpt.isPresent()) {
+    //      return dbFileOpt.get();
+    //    }
 
     fileRepository.save(entity);
     fileCacheService.putMeta(entity);

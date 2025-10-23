@@ -8,6 +8,7 @@ public class ProvinceDto {
   private Long id;
   private Long idf;
   private String code; // mã hành chính
+  private String type; // thủ đô, thành phố hay tỉnh
   private String name; // tỉnh Lào Cai
   private String detailDescription; // 99 ĐVHC (10 phường, 89 xã)
   private String oldDescription; // (trước đây là) tỉnh Yên Bái và tỉnh Lào Cai
@@ -150,5 +151,13 @@ public class ProvinceDto {
 
   public void setNote(String note) {
     this.note = note;
+  }
+
+  public String getType() {
+    return type;
+  }
+
+  public void setType(String type) {
+    this.type = type;
   }
 }

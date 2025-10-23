@@ -50,11 +50,10 @@ public class FileController {
 
     long took = System.currentTimeMillis() - start;
     LOGGER.info(
-        "[UPLOAD] Success file={}, mimeType={}, size={}, took={}ms",
+        "[UPLOAD] Success file={} took={}ms ==>> slug={}",
         fileDto.getFileName(),
-        fileDto.getFileMimeType(),
-        fileDto.getFileSize(),
-        took);
+        took,
+        fileDto.getSlug());
     return fileDto;
   }
 
@@ -76,12 +75,11 @@ public class FileController {
 
     long took = System.currentTimeMillis() - start;
     LOGGER.info(
-        "[UPLOAD-FROM-URL] Success URL={}, name={}, mimeType={}, size={}, took={}ms",
+        "[UPLOAD-FROM-URL] Success URL={}, name={} took={}ms ==>> slug={} ",
         url,
         fileDto.getFileName(),
-        fileDto.getFileMimeType(),
-        fileDto.getFileSize(),
-        took);
+        took,
+        fileDto.getSlug());
 
     return fileDto;
   }
@@ -93,7 +91,15 @@ public class FileController {
 
     List<FileDto> fileDtos =
         fileService.uploadFromUrls(sources).stream()
-            .map(file -> BeanMapper.instance().map(file, FileDto.class))
+            .map(
+                file -> {
+                  LOGGER.info(
+                      "[UPLOAD-FROM-URLS] Success URL={}, name={} =>> slug={}",
+                      file.getSource(),
+                      file.getFileName(),
+                      file.getSlug());
+                  return BeanMapper.instance().map(file, FileDto.class);
+                })
             .toList();
 
     long took = System.currentTimeMillis() - start;

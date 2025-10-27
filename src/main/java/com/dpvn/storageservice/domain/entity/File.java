@@ -1,24 +1,60 @@
-package com.dpvn.storageservice.domain;
+package com.dpvn.storageservice.domain.entity;
 
-import com.fasterxml.jackson.annotation.JsonInclude;
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.Table;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 
-@JsonInclude(JsonInclude.Include.NON_NULL)
-public class FileDto {
+@Entity
+@Table(name = "file")
+public class File {
+  @Id
+  @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long id;
+
+  @Column(nullable = false, unique = true)
   private String slug; // uuid + ext
+
+  @Column(nullable = false, columnDefinition = "TEXT")
   private String filePath; // 20250915/abc.png
+
+  @Column(nullable = false)
   private String fileName; // filename gốc upload lên
+
+  @Column(nullable = false)
   private String fileMimeType; // image/png, video/mp4...
+
+  @Column(nullable = false)
   private Long fileSize;
+
+  @Column(columnDefinition = "TEXT")
   private String source; // gốc từ cdn thuốc sỉ, hay upload lên, hay lấy từ đâu?
+
+  @Column(columnDefinition = "TEXT")
+  private String hash; // hash md5 check file upload nhiều lần
+
   private Instant createdAt;
+
   private Instant updateAt;
-  private Long accessCount = 0L;
+
+  @Column private Long accessCount = 0L;
+
   private Instant lastAccessAt;
-  private List<FileMetadataDto> metadata = new ArrayList<>();
+
+  @OneToMany(
+      mappedBy = "file",
+      cascade = CascadeType.ALL,
+      orphanRemoval = true,
+      fetch = FetchType.LAZY)
+  private List<FileMetadata> metadata = new ArrayList<>();
 
   public Long getId() {
     return id;
@@ -100,11 +136,11 @@ public class FileDto {
     this.lastAccessAt = lastAccessAt;
   }
 
-  public List<FileMetadataDto> getMetadata() {
+  public List<FileMetadata> getMetadata() {
     return metadata;
   }
 
-  public void setMetadata(List<FileMetadataDto> metadata) {
+  public void setMetadata(List<FileMetadata> metadata) {
     this.metadata = metadata;
   }
 
@@ -114,5 +150,13 @@ public class FileDto {
 
   public void setSource(String source) {
     this.source = source;
+  }
+
+  public String getHash() {
+    return hash;
+  }
+
+  public void setHash(String hash) {
+    this.hash = hash;
   }
 }

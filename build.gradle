@@ -62,7 +62,7 @@ spotless {
 
 task domainJar(type: Jar) {
     from(sourceSets.main.output) {
-        include 'com/dpvn/storageservice/domain/**'
+        include 'com/dpvn/storageservice/domain/dto/**'
     }
 
     manifest {

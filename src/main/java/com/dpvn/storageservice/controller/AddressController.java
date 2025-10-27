@@ -1,8 +1,8 @@
 package com.dpvn.storageservice.controller;
 
 import com.dpvn.shared.domain.BeanMapper;
-import com.dpvn.storageservice.domain.Province;
-import com.dpvn.storageservice.domain.ProvinceDto;
+import com.dpvn.storageservice.domain.dto.ProvinceDto;
+import com.dpvn.storageservice.domain.entity.Province;
 import com.dpvn.storageservice.service.AddressService;
 import java.util.HashSet;
 import java.util.List;

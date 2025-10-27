@@ -1,18 +1,43 @@
-package com.dpvn.storageservice.domain;
+package com.dpvn.storageservice.domain.entity;
 
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.Table;
 import java.time.LocalDateTime;
-import java.util.HashSet;
-import java.util.Set;
 
-public class ProvinceDto {
+@Entity
+@Table(name = "ward_master")
+public class Ward {
+  @Id
+  @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long id;
+
   private Long idf;
   private String code; // mã hành chính
-  private String type; // thủ đô, thành phố hay tỉnh
-  private String name; // tỉnh Lào Cai
-  private String detailDescription; // 99 ĐVHC (10 phường, 89 xã)
-  private String oldDescription; // (trước đây là) tỉnh Yên Bái và tỉnh Lào Cai
-  private String administrativeCenter; // (trung tâm hành chính ở) Yên Bái (cũ)
+  private String type; // phường hay xã
+  private String name; // Ba Đinh
+
+  @Column(columnDefinition = "TEXT")
+  private String detailDescription;
+
+  @Column(columnDefinition = "TEXT")
+  private String
+      oldDescription; // (trước đây là) "Xã Tam Hiệp (huyện Thanh Trì) (phần còn lại sau khi sáp
+
+  // nhập vào phường Hoàng Liệt), Xã Hữu Hòa (phần còn lại sau khi sáp nhập vào
+  // phường Phú Lương), Phường Kiến Hưng (phần còn lại sau khi sáp nhập vào
+  // phường Phú Lương, phường Kiến Hưng), Thị trấn Văn Điển (phần còn lại sau
+  // khi sáp nhập vào phường Hoàng Liệt, xã Thanh Trì), Xã Tả Thanh Oai (phần
+  // còn lại sau khi sáp nhập vào phường Thanh Liệt), Xã Vĩnh Quỳnh (phần còn
+  // lại sau khi sáp nhập vào xã Thanh Trì)"
+  @Column(columnDefinition = "TEXT")
+  private String administrativeCenter; // (trung tâm hành chính ở) "Thôn Quỳnh Đô, xã Đại Thanh"
+
   private long totalCitizen;
   private double totalAreaKm2;
   private String longitude; // kinh do
@@ -21,25 +46,13 @@ public class ProvinceDto {
   private LocalDateTime updatedAt;
 
   private int version;
+
+  @Column(columnDefinition = "TEXT")
   private String note;
 
-  private Set<WardDto> wards = new HashSet<>();
-
-  public Long getId() {
-    return id;
-  }
-
-  public void setId(Long id) {
-    this.id = id;
-  }
-
-  public Long getIdf() {
-    return idf;
-  }
-
-  public void setIdf(Long idf) {
-    this.idf = idf;
-  }
+  @ManyToOne
+  @JoinColumn(name = "province_id", nullable = false, referencedColumnName = "id")
+  private Province province;
 
   public LocalDateTime getCreatedAt() {
     return createdAt;
@@ -57,12 +70,36 @@ public class ProvinceDto {
     this.updatedAt = updatedAt;
   }
 
+  public Long getId() {
+    return id;
+  }
+
+  public void setId(Long id) {
+    this.id = id;
+  }
+
+  public Long getIdf() {
+    return idf;
+  }
+
+  public void setIdf(Long idf) {
+    this.idf = idf;
+  }
+
   public String getCode() {
     return code;
   }
 
   public void setCode(String code) {
     this.code = code;
+  }
+
+  public String getType() {
+    return type;
+  }
+
+  public void setType(String type) {
+    this.type = type;
   }
 
   public String getName() {
@@ -129,12 +166,12 @@ public class ProvinceDto {
     this.latitude = latitude;
   }
 
-  public Set<WardDto> getWards() {
-    return wards;
+  public Province getProvince() {
+    return province;
   }
 
-  public void setWards(Set<WardDto> wards) {
-    this.wards = wards;
+  public void setProvince(Province province) {
+    this.province = province;
   }
 
   public int getVersion() {
@@ -151,13 +188,5 @@ public class ProvinceDto {
 
   public void setNote(String note) {
     this.note = note;
-  }
-
-  public String getType() {
-    return type;
-  }
-
-  public void setType(String type) {
-    this.type = type;
   }
 }

@@ -1,39 +1,18 @@
-package com.dpvn.storageservice.domain;
+package com.dpvn.storageservice.domain.dto;
 
-import jakarta.persistence.CascadeType;
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.FetchType;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.OneToMany;
-import jakarta.persistence.Table;
 import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.Set;
 
-@Entity
-@Table(name = "province_master")
-public class Province {
-  @Id
-  @GeneratedValue(strategy = GenerationType.IDENTITY)
+public class ProvinceDto {
   private Long id;
-
   private Long idf;
   private String code; // mã hành chính
   private String type; // thủ đô, thành phố hay tỉnh
   private String name; // tỉnh Lào Cai
-
-  @Column(columnDefinition = "TEXT")
   private String detailDescription; // 99 ĐVHC (10 phường, 89 xã)
-
-  @Column(columnDefinition = "TEXT")
   private String oldDescription; // (trước đây là) tỉnh Yên Bái và tỉnh Lào Cai
-
-  @Column(columnDefinition = "TEXT")
   private String administrativeCenter; // (trung tâm hành chính ở) Yên Bái (cũ)
-
   private long totalCitizen;
   private double totalAreaKm2;
   private String longitude; // kinh do
@@ -42,16 +21,25 @@ public class Province {
   private LocalDateTime updatedAt;
 
   private int version;
-
-  @Column(columnDefinition = "TEXT")
   private String note;
 
-  @OneToMany(
-      mappedBy = "province",
-      cascade = CascadeType.ALL,
-      orphanRemoval = true,
-      fetch = FetchType.LAZY)
-  private Set<Ward> wards = new HashSet<>();
+  private Set<WardDto> wards = new HashSet<>();
+
+  public Long getId() {
+    return id;
+  }
+
+  public void setId(Long id) {
+    this.id = id;
+  }
+
+  public Long getIdf() {
+    return idf;
+  }
+
+  public void setIdf(Long idf) {
+    this.idf = idf;
+  }
 
   public LocalDateTime getCreatedAt() {
     return createdAt;
@@ -141,28 +129,12 @@ public class Province {
     this.latitude = latitude;
   }
 
-  public Set<Ward> getWards() {
+  public Set<WardDto> getWards() {
     return wards;
   }
 
-  public void setWards(Set<Ward> wards) {
+  public void setWards(Set<WardDto> wards) {
     this.wards = wards;
-  }
-
-  public Long getIdf() {
-    return idf;
-  }
-
-  public void setIdf(Long idf) {
-    this.idf = idf;
-  }
-
-  public Long getId() {
-    return id;
-  }
-
-  public void setId(Long id) {
-    this.id = id;
   }
 
   public int getVersion() {

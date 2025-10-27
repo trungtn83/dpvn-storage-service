@@ -1,6 +1,6 @@
 package com.dpvn.storageservice.service;
 
-import com.dpvn.storageservice.domain.HttpDownloadResult;
+import com.dpvn.storageservice.domain.entity.HttpDownloadResult;
 import java.io.*;
 import java.net.HttpURLConnection;
 import java.net.URL;

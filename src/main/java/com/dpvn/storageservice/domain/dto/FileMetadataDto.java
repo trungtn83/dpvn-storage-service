@@ -1,4 +1,4 @@
-package com.dpvn.storageservice.domain;
+package com.dpvn.storageservice.domain.dto;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 

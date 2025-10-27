@@ -1,43 +1,23 @@
-package com.dpvn.storageservice.domain;
+package com.dpvn.storageservice.domain.dto;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.Table;
 import java.time.LocalDateTime;
 
-@Entity
-@Table(name = "ward_master")
-public class Ward {
-  @Id
-  @GeneratedValue(strategy = GenerationType.IDENTITY)
+public class WardDto {
   private Long id;
-
   private Long idf;
   private String code; // mã hành chính
   private String type; // phường hay xã
   private String name; // Ba Đinh
-
-  @Column(columnDefinition = "TEXT")
   private String detailDescription;
-
-  @Column(columnDefinition = "TEXT")
   private String
       oldDescription; // (trước đây là) "Xã Tam Hiệp (huyện Thanh Trì) (phần còn lại sau khi sáp
-
   // nhập vào phường Hoàng Liệt), Xã Hữu Hòa (phần còn lại sau khi sáp nhập vào
   // phường Phú Lương), Phường Kiến Hưng (phần còn lại sau khi sáp nhập vào
   // phường Phú Lương, phường Kiến Hưng), Thị trấn Văn Điển (phần còn lại sau
   // khi sáp nhập vào phường Hoàng Liệt, xã Thanh Trì), Xã Tả Thanh Oai (phần
   // còn lại sau khi sáp nhập vào phường Thanh Liệt), Xã Vĩnh Quỳnh (phần còn
   // lại sau khi sáp nhập vào xã Thanh Trì)"
-  @Column(columnDefinition = "TEXT")
   private String administrativeCenter; // (trung tâm hành chính ở) "Thôn Quỳnh Đô, xã Đại Thanh"
-
   private long totalCitizen;
   private double totalAreaKm2;
   private String longitude; // kinh do
@@ -46,29 +26,7 @@ public class Ward {
   private LocalDateTime updatedAt;
 
   private int version;
-
-  @Column(columnDefinition = "TEXT")
   private String note;
-
-  @ManyToOne
-  @JoinColumn(name = "province_id", nullable = false, referencedColumnName = "id")
-  private Province province;
-
-  public LocalDateTime getCreatedAt() {
-    return createdAt;
-  }
-
-  public void setCreatedAt(LocalDateTime createdAt) {
-    this.createdAt = createdAt;
-  }
-
-  public LocalDateTime getUpdatedAt() {
-    return updatedAt;
-  }
-
-  public void setUpdatedAt(LocalDateTime updatedAt) {
-    this.updatedAt = updatedAt;
-  }
 
   public Long getId() {
     return id;
@@ -84,6 +42,22 @@ public class Ward {
 
   public void setIdf(Long idf) {
     this.idf = idf;
+  }
+
+  public LocalDateTime getCreatedAt() {
+    return createdAt;
+  }
+
+  public void setCreatedAt(LocalDateTime createdAt) {
+    this.createdAt = createdAt;
+  }
+
+  public LocalDateTime getUpdatedAt() {
+    return updatedAt;
+  }
+
+  public void setUpdatedAt(LocalDateTime updatedAt) {
+    this.updatedAt = updatedAt;
   }
 
   public String getCode() {
@@ -164,14 +138,6 @@ public class Ward {
 
   public void setLatitude(String latitude) {
     this.latitude = latitude;
-  }
-
-  public Province getProvince() {
-    return province;
-  }
-
-  public void setProvince(Province province) {
-    this.province = province;
   }
 
   public int getVersion() {

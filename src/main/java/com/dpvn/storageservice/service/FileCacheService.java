@@ -2,7 +2,7 @@ package com.dpvn.storageservice.service;
 
 import com.dpvn.shared.config.CacheService;
 import com.dpvn.shared.util.FastMap;
-import com.dpvn.storageservice.domain.File;
+import com.dpvn.storageservice.domain.entity.File;
 import org.springframework.stereotype.Service;
 
 @Service

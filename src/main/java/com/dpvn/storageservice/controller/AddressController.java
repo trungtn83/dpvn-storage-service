@@ -1,8 +1,8 @@
 package com.dpvn.storageservice.controller;
 
-import com.dpvn.shared.domain.BeanMapper;
 import com.dpvn.storageservice.domain.dto.ProvinceDto;
 import com.dpvn.storageservice.domain.entity.Province;
+import com.dpvn.storageservice.domain.mapper.ProvinceMapper;
 import com.dpvn.storageservice.service.AddressService;
 import java.util.HashSet;
 import java.util.List;
@@ -20,9 +20,11 @@ public class AddressController {
   private final Logger LOGGER = LoggerFactory.getLogger(AddressController.class);
 
   private final AddressService addressService;
+  private final ProvinceMapper provinceMapper;
 
-  public AddressController(AddressService addressService) {
+  public AddressController(AddressService addressService, ProvinceMapper provinceMapper) {
     this.addressService = addressService;
+    this.provinceMapper = provinceMapper;
   }
 
   @PostMapping("/sync-all")
@@ -33,19 +35,22 @@ public class AddressController {
     return addressService.findAll().stream()
         .map(
             address -> {
-              ProvinceDto dto = BeanMapper.instance().map(address, ProvinceDto.class);
+              ProvinceDto dto = provinceMapper.toDto(address);
               dto.setWards(new HashSet<>());
               return dto;
             })
         .toList();
   }
 
+  /**
+   * Bao gồm cả WARD trong đó
+   */
   @GetMapping("/province/{id}")
   public ProvinceDto getProvinceById(@PathVariable Long id) {
     Province province = addressService.findById(id);
     if (province == null) {
       return null;
     }
-    return BeanMapper.instance().map(province, ProvinceDto.class);
+    return provinceMapper.toDto(province);
   }
 }

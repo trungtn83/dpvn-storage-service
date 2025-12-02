@@ -7,7 +7,5 @@ import org.springframework.data.jpa.repository.JpaRepository;
 public interface FileRepository extends JpaRepository<File, Long> {
   Optional<File> findBySlug(String slug);
 
-  Optional<File> findFirstBySource(String source);
-
-  Optional<File> findFirstByHash(String hash);
+  Optional<File> getFirstBySourceOrHash(String source, String hash);
 }

@@ -35,10 +35,18 @@ spring:
       host: localhost
       port: 6379
 
+eureka:
+  client:
+    fetch-registry: true
+    register-with-eureka: true
+    service-url:
+      defaultZone: http://localhost:8761/eureka
+  instance:
+    prefer-ip-address: true
+
 storage:
   base-path: /Users/trungtn/projects/dpvn/dpvn-share/dpvn-storage-service/src/main/resources/protected
   url-prefix: http://localhost:8250/api/file  # used to construct returned links
-
 
 ---
 spring:
@@ -52,6 +60,16 @@ spring:
   data:
     redis:
       host: dpvn-redis
+
+eureka:
+  client:
+    fetch-registry: true
+    register-with-eureka: true
+    service-url:
+      defaultZone: http://dpvn-website-eureka-server:8761/eureka
+  instance:
+    prefer-ip-address: true
+
 storage:
   base-path: /apps/storage-data/protected # thư mục bên trong container, phải map ra ngoài
   url-prefix: https://storage.duocphamvietnhat.com/api/file  # used to construct returned links

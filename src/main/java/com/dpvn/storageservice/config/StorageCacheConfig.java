@@ -1,7 +1,7 @@
 package com.dpvn.storageservice.config;
 
-import com.dpvn.shared.config.CacheConfig;
-import com.dpvn.shared.config.CacheService;
+import com.dpvn.sharedcore.config.CacheConfig;
+import com.dpvn.sharedcore.config.CacheService;
 import org.springframework.cache.CacheManager;
 import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.context.annotation.Bean;

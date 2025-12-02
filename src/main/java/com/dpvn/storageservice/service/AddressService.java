@@ -1,7 +1,7 @@
 package com.dpvn.storageservice.service;
 
-import com.dpvn.shared.service.AbstractService;
-import com.dpvn.shared.util.ObjectUtil;
+import com.dpvn.sharedcore.service.AbstractService;
+import com.dpvn.sharedcore.util.ObjectUtil;
 import com.dpvn.storageservice.domain.entity.Province;
 import com.dpvn.storageservice.domain.entity.Ward;
 import com.dpvn.storageservice.repository.ProvinceRepository;

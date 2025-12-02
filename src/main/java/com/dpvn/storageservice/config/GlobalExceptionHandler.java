@@ -1,7 +1,7 @@
 package com.dpvn.storageservice.config;
 
-import com.dpvn.shared.exception.ApiError;
-import com.dpvn.shared.exception.BadRequestException;
+import com.dpvn.sharedcore.exception.ApiError;
+import com.dpvn.sharedcore.exception.BadRequestException;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ExceptionHandler;

@@ -2,7 +2,7 @@
 
 # Build the project
 ./gradlew spotlessApply
-./gradlew build
+./gradlew clean build
 
 # Check if the build succeeded
 if [ $? -eq 0 ]; then

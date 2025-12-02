@@ -1,10 +1,12 @@
 package com.dpvn.storageservice.service;
 
+import com.dpvn.sharedcore.util.LocalDateUtil;
 import com.dpvn.storageservice.domain.entity.HttpDownloadResult;
 import java.io.*;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
+import java.time.LocalDate;
 import java.util.UUID;
 import org.apache.tika.Tika;
 
@@ -74,66 +76,142 @@ public class FileUtil {
    * Tạo đường dẫn tương đối cho file
    */
   public static String getRelative(String fileName) {
-    String prefix = fileName.substring(0, 2);
+    LocalDate now = LocalDateUtil.now();
+    String prefix =
+        now.getYear()
+            + "/"
+            + (now.getMonthValue() < 10 ? "0" + now.getMonthValue() : now.getMonthValue())
+            + "/"
+            + (now.getDayOfMonth() < 10 ? "0" + now.getDayOfMonth() : now.getDayOfMonth());
     return prefix + "/" + fileName;
   }
 
-  /**
-   * Download file HTTP (đơn giản)
-   */
+  //  /**
+//   * Download file HTTP (đơn giản)
+//   */
+  //  public static HttpDownloadResult download(String urlStr) throws IOException {
+  //    try {
+  //      URL url = new URL(percentEncodeNonAscii(urlStr));
+  //      HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+  //      conn.setInstanceFollowRedirects(true); // Tự xử lý redirect
+  //      conn.setConnectTimeout(10000);
+  //      conn.setReadTimeout(10000);
+  //
+  //      conn.setRequestProperty(
+  //          "User-Agent",
+  //          "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like
+  // Gecko) Chrome/141.0.0.0 Safari/537.36");
+  //      conn.setRequestProperty(
+  //          "Accept",
+  //
+  // "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7");
+//      conn.setRequestProperty("Accept-Language", "vi,en-US;q=0.9,en;q=0.8");
+//
+//      int status = conn.getResponseCode();
+//      if (status != 200) {
+//        String err = conn.getErrorStream() != null
+//            ? new String(conn.getErrorStream().readAllBytes(), StandardCharsets.UTF_8)
+//            : "";
+//        throw new IOException("Download failed: HTTP " + status + " - " + err);
+//      }
+//
+//      String contentType = conn.getContentType();
+//      String disposition = conn.getHeaderField("Content-Disposition");
+//      String fileName;
+//      if (disposition != null && disposition.contains("filename=")) {
+//        fileName = disposition.split("filename=")[1].replace("\"", "").trim();
+//      } else {
+//        fileName = "downloaded_" + System.currentTimeMillis() + ".pdf";
+//      }
+//
+//      long size = conn.getContentLengthLong();
+//      if (size <= 0) {
+//        // Không tin tưởng content-length = 0 => đọc hết vào buffer
+//        ByteArrayOutputStream buffer = new ByteArrayOutputStream();
+//        try (InputStream in = conn.getInputStream()) {
+//          byte[] data = new byte[8192];
+//          int n;
+//          while ((n = in.read(data)) != -1) buffer.write(data, 0, n);
+//        }
+//        byte[] bytes = buffer.toByteArray();
+//        size = bytes.length;
+//        return new HttpDownloadResult(new ByteArrayInputStream(bytes), fileName, contentType, size);
+//      }
+//
+//      InputStream in = conn.getInputStream();
+//      return new HttpDownloadResult(in, fileName, contentType, size);
+//
+//    } catch (Exception e) {
+//      throw new IOException("Không tải được file từ URL: " + urlStr, e);
+//    }
+//  }
+
   public static HttpDownloadResult download(String urlStr) throws IOException {
     try {
       URL url = new URL(percentEncodeNonAscii(urlStr));
       HttpURLConnection conn = (HttpURLConnection) url.openConnection();
-      conn.setInstanceFollowRedirects(true); // Tự xử lý redirect
+      conn.setInstanceFollowRedirects(true);
       conn.setConnectTimeout(10000);
       conn.setReadTimeout(10000);
 
-      conn.setRequestProperty(
-          "User-Agent",
-          "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/141.0.0.0 Safari/537.36");
-      conn.setRequestProperty(
-          "Accept",
-          "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7");
-      conn.setRequestProperty("Accept-Language", "vi,en-US;q=0.9,en;q=0.8");
+      conn.setRequestProperty("User-Agent",
+          "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome Safari");
+      if (urlStr.startsWith("https://download.meinvoice.vn")) {
+        conn.setRequestProperty("Accept", "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7");
+      } else {
+        conn.setRequestProperty("Accept", "*/*");
+      }
 
       int status = conn.getResponseCode();
       if (status != 200) {
-        String err = conn.getErrorStream() != null
-            ? new String(conn.getErrorStream().readAllBytes(), StandardCharsets.UTF_8)
-            : "";
+        String err =
+            conn.getErrorStream() != null
+                ? new String(conn.getErrorStream().readAllBytes(), StandardCharsets.UTF_8)
+                : "";
         throw new IOException("Download failed: HTTP " + status + " - " + err);
       }
 
       String contentType = conn.getContentType();
+
+      // ----- ALWAYS READ FULL STREAM -----
+      ByteArrayOutputStream buffer = new ByteArrayOutputStream();
+      try (InputStream in = conn.getInputStream()) {
+        byte[] data = new byte[8192];
+        int n;
+        while ((n = in.read(data)) != -1) {
+          buffer.write(data, 0, n);
+        }
+      }
+      byte[] bytes = buffer.toByteArray();
+
+      // Lấy filename
       String disposition = conn.getHeaderField("Content-Disposition");
-      String fileName;
+      String fileName = "download_" + System.currentTimeMillis();
+
       if (disposition != null && disposition.contains("filename=")) {
         fileName = disposition.split("filename=")[1].replace("\"", "").trim();
-      } else {
-        fileName = "downloaded_" + System.currentTimeMillis() + ".pdf";
       }
 
-      long size = conn.getContentLengthLong();
-      if (size <= 0) {
-        // Không tin tưởng content-length = 0 => đọc hết vào buffer
-        ByteArrayOutputStream buffer = new ByteArrayOutputStream();
-        try (InputStream in = conn.getInputStream()) {
-          byte[] data = new byte[8192];
-          int n;
-          while ((n = in.read(data)) != -1) buffer.write(data, 0, n);
-        }
-        byte[] bytes = buffer.toByteArray();
-        size = bytes.length;
-        return new HttpDownloadResult(new ByteArrayInputStream(bytes), fileName, contentType, size);
+      // Nếu không có extension → đoán dựa trên contentType
+      if (!fileName.contains(".") && contentType != null) {
+        fileName += guessExt(contentType); // .jpg, .png, .pdf...
       }
 
-      InputStream in = conn.getInputStream();
-      return new HttpDownloadResult(in, fileName, contentType, size);
+      return new HttpDownloadResult(
+          new ByteArrayInputStream(bytes), fileName, contentType, bytes.length);
 
     } catch (Exception e) {
       throw new IOException("Không tải được file từ URL: " + urlStr, e);
     }
+  }
+
+  private static String guessExt(String mime) {
+    if (mime == null) return ".bin";
+    if (mime.contains("jpeg")) return ".jpg";
+    if (mime.contains("png")) return ".png";
+    if (mime.contains("pdf")) return ".pdf";
+    if (mime.contains("json")) return ".json";
+    return ".bin";
   }
 
   /**

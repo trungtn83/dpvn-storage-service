@@ -1,10 +1,10 @@
 package com.dpvn.storageservice.controller;
 
-import com.dpvn.shared.domain.BeanMapper;
-import com.dpvn.shared.util.FastMap;
-import com.dpvn.shared.util.StringUtil;
+import com.dpvn.sharedcore.util.FastMap;
+import com.dpvn.sharedcore.util.StringUtil;
 import com.dpvn.storageservice.domain.dto.FileDto;
 import com.dpvn.storageservice.domain.entity.File;
+import com.dpvn.storageservice.domain.mapper.FileMapper;
 import com.dpvn.storageservice.service.FileService;
 import java.nio.charset.StandardCharsets;
 import java.text.Normalizer;
@@ -31,9 +31,11 @@ public class FileController {
   private final Logger LOGGER = LoggerFactory.getLogger(FileController.class);
 
   private final FileService fileService;
+  private final FileMapper fileMapper;
 
-  public FileController(FileService fileService) {
+  public FileController(FileService fileService, FileMapper fileMapper) {
     this.fileService = fileService;
+    this.fileMapper = fileMapper;
   }
 
   @PostMapping(value = "/upload", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
@@ -46,7 +48,7 @@ public class FileController {
         file.getContentType());
 
     File uploadedFile = fileService.upload(file);
-    FileDto fileDto = BeanMapper.instance().map(uploadedFile, FileDto.class);
+    FileDto fileDto = fileMapper.toDto(uploadedFile);
 
     long took = System.currentTimeMillis() - start;
     LOGGER.info(
@@ -71,7 +73,7 @@ public class FileController {
         "[UPLOAD-FROM-URL] Start download file from URL={} with name is {}", url, forceName);
 
     File file = fileService.uploadFromUrl(source);
-    FileDto fileDto = BeanMapper.instance().map(file, FileDto.class);
+    FileDto fileDto = fileMapper.toDto(file);
 
     long took = System.currentTimeMillis() - start;
     LOGGER.info(
@@ -98,7 +100,7 @@ public class FileController {
                       file.getSource(),
                       file.getFileName(),
                       file.getSlug());
-                  return BeanMapper.instance().map(file, FileDto.class);
+                  return fileMapper.toDto(file);
                 })
             .toList();
 

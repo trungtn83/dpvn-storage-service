@@ -1,13 +1,13 @@
 package com.dpvn.storageservice.web;
 
-import com.dpvn.shared.domain.BeanMapper;
-import com.dpvn.shared.util.FastMap;
-import com.dpvn.shared.util.ObjectUtil;
-import com.dpvn.shared.util.StringUtil;
+import com.dpvn.sharedcore.util.FastMap;
+import com.dpvn.sharedcore.util.ObjectUtil;
+import com.dpvn.sharedcore.util.StringUtil;
 import com.dpvn.storageservice.domain.dto.ProvinceDto;
 import com.dpvn.storageservice.domain.dto.WardDto;
 import com.dpvn.storageservice.domain.entity.Province;
-import com.dpvn.storageservice.domain.entity.Ward;
+import com.dpvn.storageservice.domain.mapper.ProvinceMapper;
+import com.dpvn.storageservice.domain.mapper.WardMapper;
 import com.dpvn.storageservice.repository.ProvinceRepository;
 import com.dpvn.storageservice.service.AddressService;
 import com.fasterxml.jackson.core.type.TypeReference;
@@ -20,16 +20,20 @@ import org.springframework.stereotype.Service;
 @Service
 public class WebAddressService {
   private final BanDoClient banDoClient;
-  private final ProvinceRepository provinceRepository;
   private final AddressService addressService;
+  private final ProvinceMapper provinceMapper;
+  private final WardMapper wardMapper;
 
   public WebAddressService(
       BanDoClient banDoClient,
       ProvinceRepository provinceRepository,
-      AddressService addressService) {
+      AddressService addressService,
+      ProvinceMapper provinceMapper,
+      WardMapper wardMapper) {
     this.banDoClient = banDoClient;
-    this.provinceRepository = provinceRepository;
     this.addressService = addressService;
+    this.provinceMapper = provinceMapper;
+    this.wardMapper = wardMapper;
   }
 
   private List<ProvinceDto> getAllProvinces() {
@@ -111,15 +115,9 @@ public class WebAddressService {
 
     List<Province> provinces = new ArrayList<>();
     for (ProvinceDto provinceDto : allProvinces) {
-      Province province = BeanMapper.instance().map(provinceDto, Province.class);
+      Province province = provinceMapper.toEntity(provinceDto);
       List<WardDto> wardDtos = getAllWards(province.getIdf());
-      province.setWards(
-          wardDtos.stream()
-              .map(
-                  dto -> {
-                    return BeanMapper.instance().map(dto, Ward.class);
-                  })
-              .collect(Collectors.toSet()));
+      province.setWards(wardDtos.stream().map(wardMapper::toEntity).collect(Collectors.toSet()));
       provinces.add(province);
     }
 

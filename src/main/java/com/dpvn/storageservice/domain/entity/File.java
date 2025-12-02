@@ -23,19 +23,15 @@ public class File {
   @Column(nullable = false, unique = true)
   private String slug; // uuid + ext
 
-  @Column(nullable = false, columnDefinition = "TEXT")
+  @Column(columnDefinition = "TEXT")
   private String filePath; // 20250915/abc.png
 
-  @Column(nullable = false)
   private String fileName; // filename gốc upload lên
 
-  @Column(nullable = false)
   private String fileMimeType; // image/png, video/mp4...
 
-  @Column(nullable = false)
   private Long fileSize;
 
-  @Column(columnDefinition = "TEXT")
   private String source; // gốc từ cdn thuốc sỉ, hay upload lên, hay lấy từ đâu?
 
   @Column(columnDefinition = "TEXT")

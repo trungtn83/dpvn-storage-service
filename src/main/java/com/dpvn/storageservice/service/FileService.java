@@ -220,10 +220,10 @@ public class FileService extends AbstractService {
     }
     File file = fileCacheService.getMeta(slug);
     if (file == null) {
-      file =
-          fileRepository
-              .findBySlug(slug)
-              .orElseThrow(() -> new RuntimeException("File " + slug + " not found"));
+      file = fileRepository.findBySlug(slug).orElse(null);
+      if (file == null) {
+        return null;
+      }
       fileCacheService.putMeta(file);
     }
     return file;

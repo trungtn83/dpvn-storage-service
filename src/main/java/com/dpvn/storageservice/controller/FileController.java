@@ -119,6 +119,9 @@ public class FileController {
         "[GET-FILE] slug={}, disposition={}, ignoreCache={}", slug, disposition, ignoreCache);
 
     File file = fileService.getFileBySlug(slug, ignoreCache);
+    if (file == null) {
+      return ResponseEntity.notFound().build();
+    }
     HttpHeaders headers = buildFileHeaders(file, disposition, true);
 
     LOGGER.info(
@@ -139,6 +142,10 @@ public class FileController {
         "[HEAD-FILE] slug={}, disposition={}, ignoreCache={}", slug, disposition, ignoreCache);
 
     File file = fileService.getFileBySlug(slug, ignoreCache);
+    if (file == null) {
+      return ResponseEntity.notFound().build();
+    }
+
     HttpHeaders headers = buildFileHeaders(file, disposition, false);
     return new ResponseEntity<>(headers, HttpStatus.OK);
   }

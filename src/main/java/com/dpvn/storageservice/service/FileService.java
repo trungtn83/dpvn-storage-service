@@ -1,15 +1,25 @@
 package com.dpvn.storageservice.service;
 
-import com.dpvn.sharedcore.config.CacheService;
+import com.dpvn.sharedcore.domain.dto.PagingResponse;
 import com.dpvn.sharedcore.exception.BadRequestException;
 import com.dpvn.sharedcore.service.AbstractService;
 import com.dpvn.sharedcore.util.DateUtil;
 import com.dpvn.sharedcore.util.FastMap;
+import com.dpvn.sharedcore.util.LocalDateUtil;
 import com.dpvn.sharedcore.util.StringUtil;
 import com.dpvn.storageservice.config.StorageProperties;
+import com.dpvn.storageservice.domain.dto.FileDto;
 import com.dpvn.storageservice.domain.entity.File;
 import com.dpvn.storageservice.domain.entity.HttpDownloadResult;
+import com.dpvn.storageservice.repository.FileCustomRepository;
 import com.dpvn.storageservice.repository.FileRepository;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
+
 import java.io.BufferedInputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -21,13 +31,12 @@ import java.nio.file.StandardOpenOption;
 import java.security.DigestInputStream;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.time.Instant;
+import java.time.LocalDate;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.HexFormat;
 import java.util.List;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.stereotype.Service;
-import org.springframework.web.multipart.MultipartFile;
 
 /**
  * Refactored FileService:
@@ -45,17 +54,16 @@ public class FileService extends AbstractService {
   private final FileRepository fileRepository;
   private final StorageProperties storageProperties;
   private final FileCacheService fileCacheService;
-  private final CacheService cacheService;
+  private final FileCustomRepository fileCustomRepository;
 
   public FileService(
       FileRepository fileRepository,
       StorageProperties storageProperties,
-      FileCacheService fileCacheService,
-      CacheService cacheService) {
+      FileCacheService fileCacheService, FileCustomRepository fileCustomRepository) {
     this.fileRepository = fileRepository;
     this.storageProperties = storageProperties;
     this.fileCacheService = fileCacheService;
-    this.cacheService = cacheService;
+    this.fileCustomRepository = fileCustomRepository;
   }
 
   /**
@@ -227,5 +235,26 @@ public class FileService extends AbstractService {
       fileCacheService.putMeta(file);
     }
     return file;
+  }
+
+  public PagingResponse<FileDto> search(Integer type, String filterText, String fromDateStr, String toDateStr, String fileType, int page, int pageSize) {
+    Pageable pageable = PageRequest.of(page, pageSize);
+    Instant fromDate = toInstant(fromDateStr);
+    Instant toDate = toInstant(toDateStr);
+    if (toDate != null) {
+      toDate =  toDate.plus(1, ChronoUnit.DAYS);
+    }
+    return fileCustomRepository.search(type, filterText, fromDate, toDate, fileType, pageable);
+  }
+
+  private Instant toInstant(String localDateStr) {
+    if (StringUtil.isEmpty(localDateStr)) {
+      return null;
+    }
+    try {
+      return DateUtil.from(LocalDateUtil.from(localDateStr));
+    } catch (Exception e) {
+      return null;
+    }
   }
 }

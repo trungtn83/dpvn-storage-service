@@ -1,6 +1,10 @@
 package com.dpvn.storageservice.controller;
 
+import com.dpvn.sharedcore.domain.constant.Globals;
+import com.dpvn.sharedcore.domain.dto.PagingResponse;
 import com.dpvn.sharedcore.util.FastMap;
+import com.dpvn.sharedcore.util.ListUtil;
+import com.dpvn.sharedcore.util.LocalDateUtil;
 import com.dpvn.sharedcore.util.StringUtil;
 import com.dpvn.storageservice.domain.dto.FileDto;
 import com.dpvn.storageservice.domain.entity.File;
@@ -8,6 +12,8 @@ import com.dpvn.storageservice.domain.mapper.FileMapper;
 import com.dpvn.storageservice.service.FileService;
 import java.nio.charset.StandardCharsets;
 import java.text.Normalizer;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -241,5 +247,19 @@ public class FileController {
     }
 
     return fileName;
+  }
+
+  @PostMapping("/search")
+  public PagingResponse<FileDto> search(@RequestBody FastMap body) {
+    Integer type = body.getInt("type"); // KIOTVIET, THUOCSI ....
+    String filterText = body.getString("filterText");
+    String fromDateStr = body.getString("fromDate"); // yyyy-mm-dd
+    String toDateStr = body.getString("toDate");     // yyyy-mm-dd
+    String fileType = body.getString("fileType");
+
+    int page = body.getInt(0, "page");
+    int pageSize = body.getInt(Globals.Paging.PAGE_SIZE, "pageSize");
+
+    return fileService.search(type, filterText, fromDateStr, toDateStr, fileType, page, pageSize);
   }
 }

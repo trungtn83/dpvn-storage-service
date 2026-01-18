@@ -20,6 +20,8 @@ public class File {
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long id;
 
+  private Integer type;
+
   @Column(nullable = false, unique = true)
   private String slug; // uuid + ext
 
@@ -154,5 +156,13 @@ public class File {
 
   public void setHash(String hash) {
     this.hash = hash;
+  }
+
+  public Integer getType() {
+    return type;
+  }
+
+  public void setType(Integer type) {
+    this.type = type;
   }
 }
